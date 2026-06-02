@@ -62,28 +62,38 @@ A arquitetura foi escalada para o padrão modular, separando a lógica de negóc
 
 ### 1. Clonar o Repositório e Configurar o Ambiente
 
-```bash
+
 # Clone o repositório
+```bash
 git clone [https://github.com/seu-usuario/web-weather-app.git](https://github.com/seu-usuario/web-weather-app.git)
 cd web-weather-app
+```
 
 # Crie e ative o ambiente virtual (venv)
+```bash
 python -m venv venv
+```
 
 # Ativação no Linux/macOS:
+```bash
 source venv/bin/activate
-# Ativação no Windows:
-venv\Scripts\activate
-
 ```
+
+# Ativação no Windows:
+``` bash
+venv\Scripts\activate
+```
+
 
 ### 2. Instalar as Dependências
 
 ```bash
 pip install flask requests
-# ou, se tiver o requirements.txt:
-pip install -r requirements.txt
+```
 
+# ou, se tiver o requirements.txt:
+```bash
+pip install -r requirements.txt
 ```
 
 ### 3. Configurar a Chave da API
@@ -117,7 +127,3 @@ Para além da estrutura básica do Checkpoint, todos os desafios avançados fora
 * [x] **Desafio 3:** Inclusão da sensação térmica na interface principal (*feels_like*).
 * [x] **Desafio 4:** Histórico de buscas persistente, guardando as últimas 3 cidades pesquisadas num ficheiro `JSON` com atalhos funcionais num clique.
 * [x] **Desafio Extra (Arquitetura):** Refatorização completa para módulos separados (`clima.py`, `historico.py`) e transição do endpoint `/weather` para `/forecast` visando calcular máximas e mínimas reais baseadas num ciclo de 24 horas.
-
-```
-
-```
