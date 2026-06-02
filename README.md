@@ -1,4 +1,3 @@
-```markdown
 # 🌤️ Web Weather App (Checkpoint 5)
 
 O Web Weather App é uma aplicação web dinâmica desenvolvida como projeto de conclusão do Bloco 3 da Formação Python & Django. O sistema integra uma interface web moderna (estilo *Glassmorphism*) a dados climáticos em tempo real consumidos diretamente da API global do OpenWeatherMap.
@@ -56,7 +55,6 @@ A arquitetura foi escalada para o padrão modular, separando a lógica de negóc
     ├── home.html     # Ecrã inicial (Empty state e histórico)
     └── resultado.html# Dashboard de visualização do clima
 
-```
 
 ---
 
