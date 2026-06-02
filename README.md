@@ -63,23 +63,23 @@ A arquitetura foi escalada para o padrão modular, separando a lógica de negóc
 ### 1. Clonar o Repositório e Configurar o Ambiente
 
 
-# Clone o repositório
+### Clone o repositório
 ```bash
 git clone [https://github.com/seu-usuario/web-weather-app.git](https://github.com/seu-usuario/web-weather-app.git)
 cd web-weather-app
 ```
 
-# Crie e ative o ambiente virtual (venv)
+### Crie e ative o ambiente virtual (venv)
 ```bash
 python -m venv venv
 ```
 
-# Ativação no Linux/macOS:
+### Ativação no Linux/macOS:
 ```bash
 source venv/bin/activate
 ```
 
-# Ativação no Windows:
+### Ativação no Windows:
 ``` bash
 venv\Scripts\activate
 ```
@@ -91,7 +91,7 @@ venv\Scripts\activate
 pip install flask requests
 ```
 
-# ou, se tiver o requirements.txt:
+### ou, se tiver o requirements.txt:
 ```bash
 pip install -r requirements.txt
 ```
