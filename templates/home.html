@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="glass-card state-empty shadow-lg">
+    
+    <form method="POST" action="/" class="d-flex mb-4 search-wrapper">
+        <input type="text" name="cidade" placeholder="Pesquise uma cidade..." class="form-control bg-transparent border-0 text-white ps-4 py-2" required>
+        <button type="submit" class="btn btn-search border-0">
+            <img src="{{ url_for('static', filename='assets/MagnifyingGlass.svg') }}" width="20" alt="Search">
+        </button>
+    </form>
+
+    {% if erro %}
+        <div class="alert alert-danger text-center">{{ erro }}</div>
+    {% endif %}
+
+    {% if historico %}
+    <div class="recent-searches mt-4">
+        <h6 class="text-white fw-normal mb-2 fs-6">Ultimas pesquisas</h6>
+        <div class="bg-white rounded-4 overflow-hidden">
+            {% for item in historico %}
+            <div class="px-3 py-2 border-bottom history-item" 
+                 style="color: rgba(0, 0, 0, 0.70); cursor: pointer;"
+                 onclick="document.getElementById('historyInput').value='{{ item }}'; document.getElementById('historyForm').submit();">
+                {{ item }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

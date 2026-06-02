@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="glass-card state-active shadow-lg d-flex gap-5 flex-wrap">
+    
+    <!-- Coluna Esquerda -->
+    <div class="d-flex flex-column gap-4" style="flex: 1; min-width: 300px;">
+        
+        <form method="POST" action="/" class="d-flex search-wrapper w-100">
+            <input type="text" name="cidade" placeholder="Pesquise uma cidade..." class="form-control bg-transparent border-0 text-white ps-4 py-2" required>
+            <button type="submit" class="btn btn-search border-0">
+                <img src="{{ url_for('static', filename='assets/MagnifyingGlass.svg') }}" width="20" alt="Search">
+            </button>
+        </form>
+
+        {% if erro %}
+            <div class="alert alert-danger text-center p-2">{{ erro }}</div>
+        {% endif %}
+
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <img src="{{ url_for('static', filename='assets/MapPin.svg') }}" width="32" alt="Location">
+                <h2 class="fs-3 fw-bold mb-0">{{ clima['name'] }}, {{ clima['sys']['country'] }}</h2>
+            </div>
+            <h3 class="text-info fs-4 fw-normal text-capitalize mb-0">{{ clima['weather'][0]['description'] }}</h3>
+            <div style="font-size: 64px; font-weight: 700; line-height: 1.1;">{{ clima['main']['temp'] | round(1) }} C</div>
+        </div>
+    </div>
+
+    <!-- Coluna Direita -->
+    <div class="d-flex flex-column gap-3" style="flex: 1; min-width: 300px;">
+        
+        <div class="info-box d-flex align-items-center gap-3 w-100">
+            <img src="{{ url_for('static', filename='assets/Thermometer.svg') }}" width="32" alt="Temperatura">
+            <div class="d-flex w-100">
+                <div class="flex-fill">
+                    <div class="fw-bold fs-6">Máx</div>
+                    <div class="fs-5">{{ clima['main']['temp_max'] | round(1) }} C</div>
+                </div>
+                <div class="flex-fill">
+                    <div class="fw-bold fs-6">Min</div>
+                    <div class="fs-5">{{ clima['main']['temp_min'] | round(1) }} C</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box d-flex align-items-center gap-3 w-100">
+            <img src="{{ url_for('static', filename='assets/Beanie.svg') }}" width="32" alt="Sensação Térmica">
+            <div class="flex-fill">
+                <div class="fw-bold fs-6">Sensação térmica</div>
+                <div class="fs-5">{{ clima['main']['feels_like'] | round(1) }} C</div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 w-100">
+            <div class="info-box d-flex align-items-center gap-2 w-100">
+                <img src="{{ url_for('static', filename='assets/DropHalf.svg') }}" width="32" alt="Umidade">
+                <div>
+                    <div class="fw-bold fs-6">Umidade</div>
+                    <div class="fs-5">{{ clima['main']['humidity'] }}%</div>
+                </div>
+            </div>
+            <div class="info-box d-flex align-items-center gap-2 w-100">
+                <img src="{{ url_for('static', filename='assets/Wind.svg') }}" width="32" alt="Vento">
+                <div>
+                    <div class="fw-bold fs-6">Vento</div>
+                    <div class="fs-5">{{ (clima['wind']['speed'] * 3.6) | round(1) }} km/h</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 w-100">
+            <div class="info-box d-flex align-items-center gap-2 w-100">
+                <img src="{{ url_for('static', filename='assets/SunHorizon.svg') }}" width="32" alt="Nascer do Sol">
+                <div>
+                    <div class="fw-bold fs-6">Nascer</div>
+                    <div class="fs-5">{{ nascer_sol }}</div>
+                </div>
+            </div>
+            <div class="info-box d-flex align-items-center gap-2 w-100">
+                <img src="{{ url_for('static', filename='assets/Vector.svg') }}" width="32" alt="Pôr do Sol">
+                <div>
+                    <div class="fw-bold fs-6">Por</div>
+                    <div class="fs-5">{{ por_sol }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
