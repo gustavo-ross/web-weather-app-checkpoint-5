@@ -1,100 +1,173 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Weather App - Previsão Climática</title>
 
-    <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    
     <style>
         body {
-            background-color: #0b0f19;
-            color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: url("{{ url_for('static', filename='assets/' + bg_image) }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #F8FAFC;
         }
 
-        .weather-card {
-            background-color: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 1rem;
-            max-width: 450px;
-            width: 100%;
-            padding: 2rem;
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 40%);
+            z-index: 1;
         }
+
+        .content-wrapper { position: relative; z-index: 2; padding: 48px; }
+        .glass-card { background: rgba(17, 24, 39, 0.85); border-radius: 8px; padding: 48px; width: 100%; }
+        .state-empty { max-width: 448px; margin-top: 15vh; }
+        .state-active { max-width: 832px; margin-top: 15vh; }
 
         .info-box {
-            background-color: #1f293b;
-            border: 1px solid #334155;
+            background: rgba(248, 250, 252, 0.05);
+            border: 1px solid rgba(248, 250, 252, 0.15);
+            border-radius: 16px;
+            padding: 12px 16px;
         }
 
-        .form-control::placeholder {
-            color: #6c757d;
+        .search-wrapper { background: rgba(248, 250, 252, 0.20); border: 1px solid rgba(248, 250, 252, 0.30); border-radius: 1000px; }
+        .form-control::placeholder { color: rgba(248, 250, 252, 0.50); }
+        .form-control:focus { box-shadow: none; }
+        .btn-search {
+            background: #0DCAF0; width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 4px;
         }
-
-        .form-control:focus {
-            background-color: #1f293b;
-            border-color: #0dcaf0;
-            color: white;
-            box-shadow: none;
-        }
+        .btn-search:hover { background: #0baccc; }
+        
+        /* Efeito de hover no histórico */
+        .history-item:hover { background-color: rgba(0,0,0,0.05); }
+        
+        /* Efeito de hover na logo */
+        .logo-link:hover { opacity: 0.8; transition: opacity 0.2s; }
     </style>
-
 </head>
 
-<body class="d-flex min-vh-100 align-items-center justify-content-center p-3">
+<body>
+    <div class="bg-overlay"></div>
 
-    <div class="weather-card shadow-lg">
-        <h2 class="text-center text-info fw-bold mb-4"><i class="fa-solid fa-cloud-sun me-2"></i>Weather App</h2>
+    <form id="historyForm" method="POST" style="display: none;">
+        <input type="hidden" name="cidade" id="historyInput">
+    </form>
 
-        <!-- Formulário de Busca -->
-        <form method="POST" class="d-flex gap-2 mb-4">
-            <input type="text" name="cidade" placeholder="Digite uma cidade..."
-                class="form-control bg-dark text-white border-secondary py-2" required>
-            <button type="submit" class="btn btn-info text-dark fw-bold px-4">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
-        </form>
+    <div class="content-wrapper">
+        
+        <header class="mb-4">
+            <a href="/" class="d-flex align-items-center gap-2 text-decoration-none text-white logo-link" style="width: fit-content;">
+                <img src="{{ url_for('static', filename='assets/CloudSun.svg') }}" width="32" alt="Logo">
+                <h1 class="fs-4 fw-bold mb-0">Weather App</h1>
+            </a>
+        </header>
 
-        <!-- Feedback de Erro -->
-        <!-- Esse bloco deve aparecer se algum erro for detectado-->
-        {% if erro %}
-            <div class="alert alert-danger text-center mb-4" role="alert">
-                <i class="fa-solid fa-circle-exclamation me-2"></i> {{ erro }}
-            </div>
-        {% endif %}
+        {% if not clima %}
+            <div class="glass-card state-empty shadow-lg">
+                <form method="POST" class="d-flex mb-4 search-wrapper">
+                    <input type="text" name="cidade" placeholder="Pesquise uma cidade..." class="form-control bg-transparent border-0 text-white ps-4 py-2" required>
+                    <button type="submit" class="btn btn-search border-0">
+                        <img src="{{ url_for('static', filename='assets/MagnifyingGlass.svg') }}" width="20" alt="Search">
+                    </button>
+                </form>
 
-        <!-- Bloco de Clima Encontrado -->
-        <!-- Esse bloco deve aparecer se clima for encontrado -->
-        {% if clima %}
-        <div class="text-center mt-4">
-            <h3 class="fw-bold text-white"><i class="fa-solid fa-location-dot text-info me-2"></i>{{ clima['name'] }}, {{ clima['sys']['country'] }}</h3>
-            <p class="text-info text-capitalize mb-4 mt-1">{{ clima['weather'][0]['description'] }}</p>
-            <div class="display-2 fw-bold text-white mb-4">{{ clima['main']['temp'] | round(1) }}°C</div>
+                {% if erro %}
+                    <div class="alert alert-danger text-center">{{ erro }}</div>
+                {% endif %}
 
-            <div class="row g-3 border-top border-secondary pt-4">
-                <div class="col-6">
-                    <div class="info-box p-3 rounded">
-                        <i class="fa-solid fa-droplet text-primary mb-2 fs-4"></i>
-                        <span class="d-block small text-uppercase mb-1">Umidade</span>
-                        <span class="fs-5 fw-bold text-white">{{ clima['main']['humidity'] }}%</span>
+                {% if historico %}
+                <div class="recent-searches mt-4">
+                    <h6 class="text-white fw-normal mb-2 fs-6">Ultimas pesquisas</h6>
+                    <div class="bg-white rounded-4 overflow-hidden">
+                        {% for item in historico %}
+                        <div class="px-3 py-2 border-bottom history-item" 
+                             style="color: rgba(0, 0, 0, 0.70); cursor: pointer;"
+                             onclick="document.getElementById('historyInput').value='{{ item }}'; document.getElementById('historyForm').submit();">
+                            {{ item }}
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="info-box p-3 rounded">
-                        <i class="fa-solid fa-wind text-success mb-2 fs-4"></i>
-                        <span class="d-block small text-uppercase mb-1">Vento</span>
-                        <span class="fs-5 fw-bold text-white">{{ (clima['wind']['speed'] * 3.6) | round(1) }} km/h</span>
+                {% endif %}
+            </div>
+
+        {% else %}
+            <div class="glass-card state-active shadow-lg d-flex gap-5 flex-wrap">
+                <div class="d-flex flex-column gap-4" style="flex: 1; min-width: 300px;">
+                    <form method="POST" class="d-flex search-wrapper w-100">
+                        <input type="text" name="cidade" placeholder="Pesquise uma cidade..." class="form-control bg-transparent border-0 text-white ps-4 py-2" required>
+                        <button type="submit" class="btn btn-search border-0">
+                            <img src="{{ url_for('static', filename='assets/MagnifyingGlass.svg') }}" width="20" alt="Search">
+                        </button>
+                    </form>
+
+                    {% if erro %}
+                        <div class="alert alert-danger text-center p-2">{{ erro }}</div>
+                    {% endif %}
+
+                    <div class="mt-2">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <img src="{{ url_for('static', filename='assets/MapPin.svg') }}" width="32" alt="Location">
+                            <h2 class="fs-3 fw-bold mb-0">{{ clima['name'] }}, {{ clima['sys']['country'] }}</h2>
+                        </div>
+                        <h3 class="text-info fs-4 fw-normal text-capitalize mb-0">{{ clima['weather'][0]['description'] }}</h3>
+                        <div style="font-size: 64px; font-weight: 700; line-height: 1.1;">{{ clima['main']['temp'] | round(1) }} C</div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3" style="flex: 1; min-width: 300px;">
+                    <div class="info-box d-flex align-items-center gap-3">
+                        <img src="{{ url_for('static', filename='assets/Thermometer.svg') }}" width="32" alt="Temperatura">
+                        <div class="d-flex w-100">
+                            <div class="flex-fill">
+                                <div class="fw-bold fs-6">Máx</div>
+                                <div class="fs-5">{{ clima['main']['temp_max'] | round(1) }} C</div>
+                            </div>
+                            <div class="flex-fill">
+                                <div class="fw-bold fs-6">Min</div>
+                                <div class="fs-5">{{ clima['main']['temp_min'] | round(1) }} C</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box d-flex align-items-center gap-3">
+                        <img src="{{ url_for('static', filename='assets/Beanie.svg') }}" width="32" alt="Sensação Térmica">
+                        <div class="flex-fill">
+                            <div class="fw-bold fs-6">Sensação térmica</div>
+                            <div class="fs-5">{{ clima['main']['feels_like'] | round(1) }} C</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <div class="info-box d-flex flex-fill align-items-center gap-2">
+                            <img src="{{ url_for('static', filename='assets/SunHorizon.svg') }}" width="32" alt="Nascer do Sol">
+                            <div>
+                                <div class="fw-bold fs-6">Nascer</div>
+                                <div class="fs-5">{{ nascer_sol }}</div>
+                            </div>
+                        </div>
+                        <div class="info-box d-flex flex-fill align-items-center gap-2">
+                            <img src="{{ url_for('static', filename='assets/Vector.svg') }}" width="32" alt="Pôr do Sol">
+                            <div>
+                                <div class="fw-bold fs-6">Por</div>
+                                <div class="fs-5">{{ por_sol }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         {% endif %}
-
     </div>
-
 </body>
-
 </html>
