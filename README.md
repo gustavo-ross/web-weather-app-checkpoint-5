@@ -54,7 +54,7 @@ A arquitetura foi escalada para o padrão modular, separando a lógica de negóc
     ├── base.html     # Esqueleto estrutural (Herança Jinja2)
     ├── home.html     # Ecrã inicial (Empty state e histórico)
     └── resultado.html# Dashboard de visualização do clima
-
+```
 
 ---
 
